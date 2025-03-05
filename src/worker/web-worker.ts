@@ -82,7 +82,7 @@ self.onmessage = function (event) {
 // Stop Execution Logic
 function checkStopSignal() {
 	if (shouldStop) {
-		self.postMessage({ type: "done", message: "Execution stopped by user" });
+		self.postMessage({ type: "done", message: "=== Execution stopped by user ===" });
 	}
 	setTimeout(checkStopSignal, 100);
 }
