@@ -2,9 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { CodeXml, Square, PanelRightClose, Text, PanelRightOpen } from "lucide-react";
 import { Editor } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { Slider, Button } from "@mui/material";
+import { ListItemIcon, Slider } from "@mui/material";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+// import { SettingsApplications } from "@mui/icons-material";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { Menu, MenuItem, Box } from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
 
 export default function CodeEditor() {
 	const [code, setCode] = useState(`/* 
@@ -25,7 +29,9 @@ console.log("Brew your code 😊");
 	const [logs, setLogs] = useState<string[]>([]);
 	console.log("logs: ", logs);
 	const [stopping, setStopping] = useState(false);
+	const [anchorEl, setAnchorEl] = useState<HTMLElement | SVGSVGElement | null>(null);
 	const [runState, setRunState] = useState(false);
+	const [autoSuggestion, setAutoSuggestion] = useState(true);
 	const [showConsole, setShowConsole] = useState(true);
 	const workerRef = useRef<Worker | null>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -93,6 +99,22 @@ console.log("Brew your code 😊");
 
 	const handleEditorDidMount = (editor: any) => {
 		editorRef.current = editor;
+
+		editorRef.current?.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Quote, () => {
+			handleRunCode();
+		});
+	};
+
+	const handleSettingsClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
+	const handleAutoSuggetion = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setAutoSuggestion(event?.target.checked);
 	};
 
 	return (
@@ -102,30 +124,72 @@ console.log("Brew your code 😊");
 					<div className="flex flex-1 flex-col border-r border-gray-700">
 						<div className="flex items-center justify-between border-b border-gray-700 px-4 py-2.5">
 							<div className="text-m text-gray-400">main.js</div>
-							<div className="flex items-center gap-5 w-110">
+							<div className="flex items-center justify-end gap-5 w-110">
+								<button className="text-m text-gray-400 hover:text-gray-300  py-1 rounded" onClick={clearCode}>
+									Clear
+								</button>
 								<button className="hover:cursor-pointer hover:bg-gray-700 rounded  p-1" onClick={handleFormateEditor}>
 									<Text color="gray" />
 								</button>
-								<button className="text-m text-gray-400 hover:text-gray-300 px-7 py-1 rounded" onClick={clearCode}>
-									Clear
-								</button>
-								<TextFieldsIcon color="primary" onClick={() => setFsize(18)} />
-								<Slider defaultValue={18} value={fsize} valueLabelDisplay="auto" step={2} marks min={10} max={30} onChange={(_, newValue) => setFsize(newValue as number)} />
+								{/* Settings Button */}
+								<SettingsIcon className="hover:cursor-pointer text-gray-400 hover:text-gray-300" onClick={(event: React.MouseEvent<SVGSVGElement>) => handleSettingsClick(event)} />
+								<Menu
+									className="w-3xl"
+									anchorEl={anchorEl}
+									open={Boolean(anchorEl)}
+									onClose={handleClose}
+									anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+									transformOrigin={{
+										vertical: "top",
+										horizontal: "right",
+									}}>
+									<MenuItem>
+										<ListItemIcon onClick={() => setFsize(18)}>
+											<TextFieldsIcon color="primary" titleAccess="Default: 18" />
+										</ListItemIcon>
+										<Box sx={{ width: "200px", paddingX: 2 }}>
+											<Slider
+												defaultValue={18}
+												value={fsize}
+												valueLabelDisplay="auto"
+												step={2}
+												marks
+												min={10}
+												max={30}
+												onChange={(_, newValue) => setFsize(newValue as number)}
+												componentsProps={{ valueLabel: { style: { top: 22, transform: "translateY(100%)" } } }}
+											/>
+										</Box>
+									</MenuItem>
+									<MenuItem>
+										<div className="flex gap-19 items-center">
+											<ListItemIcon>Auto Suggestion</ListItemIcon>
+											<Checkbox checked={autoSuggestion} onChange={handleAutoSuggetion} />
+										</div>
+									</MenuItem>
+								</Menu>
 								{!runState ? (
 									<button className="rounded bg-blue-600 px-4 py-1 text-white hover:bg-blue-700 flex gap-1" onClick={handleRunCode}>
 										<CodeXml /> Run
 									</button>
 								) : (
-									<Button onClick={handleStopCode} loading={stopping} loadingIndicator="Loading…" variant="outlined">
+									<button onClick={handleStopCode} className="rounded bg-red-600 px-4 py-1 text-white hover:bg-red-700 flex gap-1">
 										<Square size={18} /> Stop
-									</Button>
+									</button>
 								)}
 							</div>
 						</div>
 						<Editor
 							className="h-screen"
 							theme="vs-dark"
-							options={{ fontSize: fsize, quickSuggestions: true, suggestOnTriggerCharacters: true }}
+							options={{
+								fontSize: fsize,
+								quickSuggestions: autoSuggestion,
+								suggestOnTriggerCharacters: autoSuggestion,
+								wordBasedSuggestions: autoSuggestion ? "currentDocument" : "off",
+								// inlineSuggest: ,
+								snippetSuggestions: autoSuggestion ? "inline" : "none",
+							}}
 							defaultLanguage="javascript"
 							value={code}
 							onChange={(value) => setCode(value || "")}
