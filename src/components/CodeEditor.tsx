@@ -28,7 +28,7 @@ console.log("Brew your code 😊");
 	const [fsize, setFsize] = useState(18);
 	const [logs, setLogs] = useState<string[]>([]);
 	console.log("logs: ", logs);
-	const [stopping, setStopping] = useState(false);
+	const [, setStopping] = useState(false);
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | SVGSVGElement | null>(null);
 	const [runState, setRunState] = useState(false);
 	const [autoSuggestion, setAutoSuggestion] = useState(true);
