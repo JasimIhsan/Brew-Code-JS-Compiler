@@ -69,9 +69,10 @@ console.log("Brew your code 😊");
 		};
 	}, []);
 
-	const handleRunCode = () => {
+	const handleRunCode = (code: string) => {
 		setRunState(true);
 		setLogs([]);
+		console.log(code);
 		if (!workerRef.current) createWorker();
 		workerRef.current?.postMessage(code);
 	};
@@ -101,7 +102,8 @@ console.log("Brew your code 😊");
 		editorRef.current = editor;
 
 		editorRef.current?.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Quote, () => {
-			handleRunCode();
+			const currentCode = editorRef.current?.getValue() ?? "";
+			handleRunCode(currentCode);
 		});
 	};
 
@@ -169,11 +171,11 @@ console.log("Brew your code 😊");
 									</MenuItem>
 								</Menu>
 								{!runState ? (
-									<button className="rounded bg-blue-600 px-4 py-1 text-white hover:bg-blue-700 flex gap-1" onClick={handleRunCode}>
+									<button className="rounded bg-blue-600 px-4 py-1 text-white hover:bg-blue-700 flex gap-1" onClick={() => handleRunCode(code)} title="Ctrl + '">
 										<CodeXml /> Run
 									</button>
 								) : (
-									<button onClick={handleStopCode} className="rounded bg-red-600 px-4 py-1 text-white hover:bg-red-700 flex gap-1">
+									<button onClick={handleStopCode} className="rounded bg-red-600 px-4 py-1 text-white hover:bg-red-700 flex gap-1 items-center">
 										<Square size={18} /> Stop
 									</button>
 								)}

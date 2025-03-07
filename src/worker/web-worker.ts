@@ -67,7 +67,7 @@ self.onmessage = function (event) {
 	};
 
 	try {
-		const wrappedCode = `(function(){${code}})()`;
+		const wrappedCode = `(async function(){${code}})()`;
 		eval(wrappedCode);
 		self.postMessage({ type: "done", message: "\n=== Execution Completed ===" });
 	} catch (err: any) {
