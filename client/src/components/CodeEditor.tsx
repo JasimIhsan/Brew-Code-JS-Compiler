@@ -9,6 +9,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Menu, MenuItem, Box } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
+import { useTheme } from "../context/ThemeContext";
 
 export default function CodeEditor() {
 	const [code, setCode] = useState(`/* 
@@ -35,7 +36,7 @@ console.log("Brew your code 😊");
 	const [showConsole, setShowConsole] = useState(true);
 	const workerRef = useRef<Worker | null>(null);
 	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-
+	const { theme } = useTheme();
 	const createWorker = () => {
 		if (workerRef.current) {
 			workerRef.current.terminate();
@@ -121,13 +122,19 @@ console.log("Brew your code 😊");
 
 	return (
 		<PanelGroup direction="horizontal">
-			<div className="flex flex-1 flex-col md:flex-row bg-gray-800">
+
+			{/* changed the theme here */}
+			<div className={`flex flex-1 flex-col md:flex-row  ${theme === "dark" ? "bg-gray-800" : "bg-white"
+				}`}>
 				<Panel minSize={30}>
-					<div className="flex flex-1 flex-col border-r border-gray-700">
-						<div className="flex items-center justify-between border-b border-gray-700 px-4 py-2.5">
-							<div className="text-m text-gray-400">main.js</div>
+					<div className="flex flex-1 flex-col border-r  border-gray-400">
+						<div className="flex items-center justify-between border-b border-gray-400 px-4 py-2.5">
+							<div className={`${theme === "dark" ? "text-gray-400" : "text-gray-800"} text-m`}>main.js</div>
 							<div className="flex items-center justify-end gap-5 w-110">
-								<button className="text-m text-gray-400 hover:text-gray-300  py-1 rounded" onClick={clearCode}>
+								<button className={`text-m py-1 rounded  ${theme === "dark"
+									? "text-gray-400 hover:text-gray-300"
+									: "text-gray-800 hover:text-gray-900"
+									}`} onClick={clearCode}>
 									Clear
 								</button>
 								<button className="hover:cursor-pointer hover:bg-gray-700 rounded  p-1" onClick={handleFormateEditor}>
@@ -183,13 +190,12 @@ console.log("Brew your code 😊");
 						</div>
 						<Editor
 							className="h-screen"
-							theme="vs-dark"
+							theme={theme === "dark" ? "vs-dark" : "vs-light"} 
 							options={{
 								fontSize: fsize,
 								quickSuggestions: autoSuggestion,
 								suggestOnTriggerCharacters: autoSuggestion,
 								wordBasedSuggestions: autoSuggestion ? "currentDocument" : "off",
-								// inlineSuggest: ,
 								snippetSuggestions: autoSuggestion ? "inline" : "none",
 							}}
 							defaultLanguage="javascript"
@@ -205,20 +211,30 @@ console.log("Brew your code 😊");
 				{showConsole && (
 					<Panel minSize={20}>
 						<div className="flex flex-col">
-							<div className="flex items-center justify-between border-b border-gray-700 px-4 py-2.5">
-								<div className="text-m text-gray-400">Output</div>
+							<div className="flex items-center justify-between border-b border-gray-400 px-4 py-2.5">
+								<div className={theme === "dark" ? "text-gray-400" : "text-gray-800"}>Output</div>
 								<div className="flex items-center">
-									<button className="text-m text-gray-400 hover:text-gray-300  px-7 py-1 rounded" onClick={() => navigator.clipboard.writeText(logs.join("\n"))}>
+									<button className={`px-7 cursor-pointer py-1 rounded ${theme === "dark"
+										? "text-gray-400 hover:text-gray-300 bg-gray-800"
+										: "text-gray-800 hover:text-gray-600 bg-white"
+										}`} onClick={() => navigator.clipboard.writeText(logs.join("\n"))}>
 										copy
 									</button>
-									<button className="text-m text-gray-400 hover:text-gray-300 border-1 px-7 py-1 rounded" onClick={() => setLogs([])}>
+									<button className={`border px-7 cursor-pointer py-1 rounded ${theme === "dark"
+										? "text-gray-400 hover:text-gray-300 border-gray-500 bg-gray-800"
+										: "text-gray-700 hover:text-gray-600 border-gray-500 bg-white"
+										}`} onClick={() => setLogs([])}>
 										Clear
 									</button>
-									<PanelRightClose className="ml-4 text-gray-400 hover:text-gray-300 hover:cursor-pointer" onClick={() => setShowConsole(!showConsole)} />
+									<PanelRightClose className={`ml-4 hover:cursor-pointer ${theme === "dark"
+										? "text-gray-400 hover:text-gray-300"
+										: "text-gray-800 hover:text-gray-600"
+										}`} onClick={() => setShowConsole(!showConsole)} />
 								</div>
 							</div>
 
-							<div className="px-4 py-2 h-screen overflow-y-auto bg-black text-white font-mono text-m">
+							<div className={`px-4 py-2 h-screen overflow-y-auto font-mono text-m ${theme === "dark" ? "bg-black text-white" : "bg-white text-black"
+								}`}>
 								{logs.map((log, index) => {
 									return <div key={index}>{log}</div>;
 								})}
@@ -229,8 +245,10 @@ console.log("Brew your code 😊");
 
 				{!showConsole && (
 					<div className="w-10 h-screen flex items-center justify-start mt-3.5 flex-col relative space-y-2">
-						<PanelRightOpen className="mb-6 text-gray-400 hover:text-gray-300" onClick={() => setShowConsole(!showConsole)} />
-						<p className="text-center  -rotate-90 text-sm text-gray-400">Console</p>
+						<PanelRightOpen className={`mb-6 ${theme === "dark" ? "text-gray-400 hover:text-gray-300" : "text-gray-800 hover:text-gray-600"
+							}`} onClick={() => setShowConsole(!showConsole)} />
+						<p className={`text-center -rotate-90 text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-800"
+							}`}>Console</p>
 					</div>
 				)}
 			</div>
