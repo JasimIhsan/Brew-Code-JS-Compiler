@@ -127,8 +127,10 @@ console.log("Brew your code 😊");
 			<div className={`flex flex-1 flex-col md:flex-row  ${theme === "dark" ? "bg-gray-800" : "bg-white"
 				}`}>
 				<Panel minSize={30}>
-					<div className="flex flex-1 flex-col border-r  border-gray-400">
-						<div className="flex items-center justify-between border-b border-gray-400 px-4 py-2.5">
+					<div className={`flex flex-1 flex-col border-r  ${theme === "dark" ? " border-gray-700" : " border-gray-200"
+				}`}>
+						<div className={`flex items-center justify-between border-b ${theme === "dark" ? " border-gray-700" : " border-gray-200"
+				} px-4 py-2.5`}>
 							<div className={`${theme === "dark" ? "text-gray-400" : "text-gray-800"} text-m`}>main.js</div>
 							<div className="flex items-center justify-end gap-5 w-110">
 								<button className={`text-m py-1 rounded  ${theme === "dark"
@@ -211,7 +213,8 @@ console.log("Brew your code 😊");
 				{showConsole && (
 					<Panel minSize={20}>
 						<div className="flex flex-col">
-							<div className="flex items-center justify-between border-b border-gray-400 px-4 py-2.5">
+							<div className={`flex items-center justify-between border-b ${theme === "dark" ? " border-gray-700" : " border-gray-200"
+				} px-4 py-2.5`}>
 								<div className={theme === "dark" ? "text-gray-400" : "text-gray-800"}>Output</div>
 								<div className="flex items-center">
 									<button className={`px-7 cursor-pointer py-1 rounded ${theme === "dark"
