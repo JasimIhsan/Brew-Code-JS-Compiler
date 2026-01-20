@@ -35,3 +35,7 @@ jobs:
               tags: |
                  ${{ secrets.DOCKER_HUB_USERNAME }}/brewcode-compiler:latest
                  ${{ secrets.DOCKER_HUB_USERNAME }}/brewcode-compiler:${{ github.sha }}
+
+         - name: Trigger Render Deployment
+           if: github.event_name == 'push'
+           run: curl "${{ secrets.RENDER_DEPLOY_HOOK }}"
