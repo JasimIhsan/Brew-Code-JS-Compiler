@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:4000";
+const API_URL = "http://https://brewcode-js-compiler.onrender.com";
 
 interface ExecutionResponse {
    output: string;
